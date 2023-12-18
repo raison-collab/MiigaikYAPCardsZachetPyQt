@@ -7,7 +7,9 @@ class DatabaseController:
 
         self.connection = sqlite3.connect(path)
 
-    def get_all_data(self):
+        # todo Доработать бд в коде
+
+    def get_all_data_employee_cards(self):
         with self.connection as con:
             return con.cursor().execute('SELECT * FROM employee_cards').fetchall()
 
@@ -19,11 +21,30 @@ class DatabaseController:
             return True
         return False
 
-    def add_employee(self, card_number: int, first_name: str, second_name: str):
+    def check_employee_in_visitors(self, card_number: int) -> bool:
         with self.connection as con:
-            con.cursor().execute('INSERT INTO employee_cards VALUES (?,?,?)', (card_number, first_name, second_name))
+            result = con.cursor().execute('SELECT * FROM employee_visiting WHERE card_number=?', (card_number,)).fetchall()
+
+        if len(result):
+            return True
+        return False
+
+    def add_employee(self, data: tuple):
+        with self.connection as con:
+            con.cursor().execute('INSERT INTO employee_cards VALUES (?,?,?,?,?,?,?,?)', data)
 
     def get_employee_by_card_number(self, card_number: int) -> tuple:
         with self.connection as con:
             return con.cursor().execute('SELECT * FROM employee_cards WHERE card_number=?', (card_number,)).fetchone()
 
+    def add_employee_visiting_time_in(self, card_number: int, time_in: str):
+        with self.connection as con:
+            con.cursor().execute('INSERT INTO employee_visiting (card_number, time_in) VALUES (?, ?)', (card_number, time_in))
+
+    def add_employee_visiting_time_from(self, card_number: int, time_from: str):
+        with self.connection as con:
+            con.cursor().execute(f'UPDATE employee_visiting SET time_from="{time_from}" WHERE card_number={card_number}')
+
+    def get_employee_visiting(self, card_number) -> list:
+        with self.connection as con:
+            return con.cursor().execute('SELECT * FROM employee_visiting WHERE card_number=?', (card_number,)).fetchall()

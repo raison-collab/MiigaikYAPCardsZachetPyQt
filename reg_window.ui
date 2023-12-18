@@ -17,84 +17,207 @@
    <string notr="true">background-color: rgb(44, 44, 44);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLineEdit" name="first_name">
+   <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>30</y>
-      <width>251</width>
-      <height>51</height>
+      <x>19</x>
+      <y>9</y>
+      <width>441</width>
+      <height>621</height>
      </rect>
     </property>
-    <property name="styleSheet">
-     <string notr="true">border-radius: 8px;
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>439</width>
+       <height>619</height>
+      </rect>
+     </property>
+     <widget class="QLineEdit" name="card_number">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>10</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px; 
 color: rgb(255, 255, 255);
 padding: 5px;
 font: 25 italic 13pt &quot;Ubuntu&quot;;
 border:  1px solid #fff;</string>
-    </property>
-    <property name="placeholderText">
-     <string>Имя</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="second_name">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>94</y>
-      <width>251</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">border-radius: 8px;
-color: rgb(255, 255, 255);
-padding: 5px;
-font: 25 italic 13pt &quot;Ubuntu&quot;;
-border:  1px solid #fff;</string>
-    </property>
-    <property name="placeholderText">
-     <string>Фамилия</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="card_number">
-    <property name="geometry">
-     <rect>
-      <x>112</x>
-      <y>160</y>
-      <width>251</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">border-radius: 8px; 
-color: rgb(255, 255, 255);
-padding: 5px;
-font: 25 italic 13pt &quot;Ubuntu&quot;;
-border:  1px solid #fff;</string>
-    </property>
-    <property name="placeholderText">
-     <string>Номер пропуска</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="reg_button">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>230</y>
-      <width>201</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(87, 227, 137);
+      </property>
+      <property name="placeholderText">
+       <string>Номер пропуска</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="reg_button">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>500</y>
+        <width>201</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(87, 227, 137);
 font: 12pt &quot;Ubuntu&quot;;
 color: rgb(255, 255, 255);
 border-radius: 20px;</string>
-    </property>
-    <property name="text">
-     <string>Зарегистрировать</string>
-    </property>
+      </property>
+      <property name="text">
+       <string>Зарегистрировать</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="first_name">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>70</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px;
+color: rgb(255, 255, 255);
+padding: 5px;
+font: 25 italic 13pt &quot;Ubuntu&quot;;
+border:  1px solid #fff;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Имя</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="second_name">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>130</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px;
+color: rgb(255, 255, 255);
+padding: 5px;
+font: 25 italic 13pt &quot;Ubuntu&quot;;
+border:  1px solid #fff;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Фамилия</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="last_name">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>190</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px;
+color: rgb(255, 255, 255);
+padding: 5px;
+font: 25 italic 13pt &quot;Ubuntu&quot;;
+border:  1px solid #fff;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Отчество</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="birthday">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>250</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px;
+color: rgb(255, 255, 255);
+padding: 5px;
+font: 25 italic 13pt &quot;Ubuntu&quot;;
+border:  1px solid #fff;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Дата рождения дд.мм.гггг</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="jobtitle">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>310</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px;
+color: rgb(255, 255, 255);
+padding: 5px;
+font: 25 italic 13pt &quot;Ubuntu&quot;;
+border:  1px solid #fff;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Должность</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="phone_number">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>370</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px;
+color: rgb(255, 255, 255);
+padding: 5px;
+font: 25 italic 13pt &quot;Ubuntu&quot;;
+border:  1px solid #fff;</string>
+      </property>
+      <property name="placeholderText">
+       <string>+79998887766</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="mail">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>430</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-radius: 8px;
+color: rgb(255, 255, 255);
+padding: 5px;
+font: 25 italic 13pt &quot;Ubuntu&quot;;
+border:  1px solid #fff;</string>
+      </property>
+      <property name="placeholderText">
+       <string>Почта</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
  </widget>

@@ -112,7 +112,7 @@ border-radius: 15px;
      <string>Выдать временный пропуск</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="parcking_ticket">
+   <widget class="QPushButton" name="parking_ticket_button">
     <property name="geometry">
      <rect>
       <x>110</x>

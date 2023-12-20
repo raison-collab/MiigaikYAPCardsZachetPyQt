@@ -186,6 +186,63 @@ class TempCardWindow(QMainWindow, MessageHandler, FieldValidator):
         self.phone_number_field.clear()
 
 
+class ParkingTicketWindow(QMainWindow, FieldValidator, MessageHandler):
+    def __init__(self):
+        super().__init__()
+
+        uic.loadUi('parking_ticket_window.ui', self)
+
+        self.employee_allocated_places = 0  # кол-во выданных талонов для сотрудников
+        self.guest_allocated_places = 0  # кол-во выданных талонов для гостей
+
+        self.for_guest_places = 10  # кол-во мест для гостей
+        self.for_employee_places = 30  # кол-во мест для сотрудников
+
+        self.for_employee_button: QPushButton = self.findChild(QPushButton, 'employee_button')
+        self.for_guest_button: QPushButton = self.findChild(QPushButton, 'guest_button')
+        self.info_places_button: QPushButton = self.findChild(QPushButton, 'info_places_button')
+
+        self.set_events()
+
+    def update_employee_places(self):
+        self.for_employee_places = 30 + self.for_guest_places - self.guest_allocated_places
+
+    def set_events(self):
+        self.for_employee_button.clicked.connect(self.issue_employee_ticket)
+        self.for_guest_button.clicked.connect(self.issue_guest_ticket)
+        self.info_places_button.clicked.connect(self.get_info_places)
+
+    def issue_employee_ticket(self):
+        if self.employee_allocated_places == self.for_employee_places:
+            return self.show_message(QMessageBox.Icon.Warning, 'Свободных мест нет', 'Свободных мест на парковке нет')
+
+        self.employee_allocated_places += 1
+
+        self.update_employee_places()
+
+        report_message = f'Свободные места для сотрудников: {self.for_employee_places - self.employee_allocated_places}/{self.for_employee_places}\n'
+
+        return self.show_message(QMessageBox.Icon.Information, 'Талон для сотрудника выдан', report_message)
+
+    def issue_guest_ticket(self):
+        if self.guest_allocated_places == self.for_guest_places:
+            return self.show_message(QMessageBox.Icon.Warning, 'Свободных мест нет', 'Свободных мест на парковке нет')
+
+        self.guest_allocated_places += 1
+
+        self.update_employee_places()
+
+        report_message = f'Свободные места для гостей: {self.for_guest_places - self.guest_allocated_places}/{self.for_guest_places}'
+
+        return self.show_message(QMessageBox.Icon.Information, ' Талон для гостя выдан', report_message)
+
+    def get_info_places(self):
+        report_message = (f'Свободные места для сотрудников: {self.for_employee_places - self.employee_allocated_places}/{self.for_employee_places}\n'
+                          f'Свободные места для гостей: {self.for_guest_places - self.guest_allocated_places}/{self.for_guest_places}')
+
+        return self.show_message(QMessageBox.Icon.Information, 'Информация о местах', report_message)
+
+
 class MainWindow(QMainWindow, MessageHandler, FieldValidator):
     def __init__(self):
         super().__init__()
@@ -196,6 +253,7 @@ class MainWindow(QMainWindow, MessageHandler, FieldValidator):
         self.access_employee_button: QPushButton = self.findChild(QPushButton, 'access_employee_button')
         self.out_employee_button: QPushButton = self.findChild(QPushButton, 'out_employee_button')
         self.issue_temp_card_button: QPushButton = self.findChild(QPushButton, 'temp_card_button')
+        self.issue_parking_ticket_button: QPushButton = self.findChild(QPushButton, 'parking_ticket_button')
 
         self.card_number_field: QLineEdit = self.findChild(QLineEdit, 'card_number')
 
@@ -203,12 +261,14 @@ class MainWindow(QMainWindow, MessageHandler, FieldValidator):
 
         self.reg_window = None
         self.temp_card_window = None
+        self.parking_ticket_window = None
 
     def set_events(self):
         self.reg_button.clicked.connect(self.show_reg_window)
         self.access_employee_button.clicked.connect(self.access_employee)
         self.out_employee_button.clicked.connect(self.out_employee)
         self.issue_temp_card_button.clicked.connect(self.show_temp_card_window)
+        self.issue_parking_ticket_button.clicked.connect(self.show_parking_ticket_window)
 
     def access_employee(self):
         if not self.valid_fields():
@@ -307,3 +367,7 @@ class MainWindow(QMainWindow, MessageHandler, FieldValidator):
     def show_temp_card_window(self):
         self.temp_card_window = TempCardWindow()
         self.temp_card_window.show()
+
+    def show_parking_ticket_window(self):
+        self.parking_ticket_window = ParkingTicketWindow()
+        self.parking_ticket_window.show()

@@ -1,5 +1,6 @@
 import datetime
 import re
+from datetime import timedelta
 from pprint import pprint
 
 from PyQt6 import uic
@@ -38,7 +39,8 @@ class RegWindow(QMainWindow, MessageHandler, FieldValidator):
         self.reg_button.clicked.connect(self.register_user)
 
     def set_card_number(self):
-        all_cards_numbers = [row[0] for row in db.get_all_data_employee_cards()]
+        temp_cards_data = db.get_temp_cards_data()
+        all_cards_numbers = [row[0] for row in db.get_all_data_employee_cards()] + [row[0] for row in temp_cards_data if temp_cards_data]
         card_number = Util.generate_random_card_number([1000, 1_000_000])
 
         if card_number in all_cards_numbers:
@@ -113,8 +115,11 @@ class TempCardWindow(QMainWindow, MessageHandler, FieldValidator):
         self.first_name_field: QLineEdit = self.findChild(QLineEdit, 'first_name')
         self.second_name_field: QLineEdit = self.findChild(QLineEdit, 'second_name')
         self.card_number_field: QLineEdit = self.findChild(QLineEdit, 'card_number')
+        self.phone_number_field: QLineEdit = self.findChild(QLineEdit, 'phone_number')
 
         self.access_button: QPushButton = self.findChild(QPushButton, 'access_button')
+
+        self.time_ = 4  # время на которое выдается пропуск
 
         self.set_events()
         self.set_card_number()
@@ -123,7 +128,8 @@ class TempCardWindow(QMainWindow, MessageHandler, FieldValidator):
         self.access_button.clicked.connect(self.issue_temp_card)
 
     def set_card_number(self):
-        all_cards_numbers = [row[0] for row in db.get_all_data_employee_cards()]
+        temp_cards_data = db.get_temp_cards_data()
+        all_cards_numbers = [row[0] for row in db.get_all_data_employee_cards()] + [row[0] for row in temp_cards_data if temp_cards_data]
         card_number = Util.generate_random_card_number([1000, 1_000_000])
 
         if card_number in all_cards_numbers:
@@ -132,13 +138,52 @@ class TempCardWindow(QMainWindow, MessageHandler, FieldValidator):
         self.card_number_field.setText(str(card_number))
 
     def issue_temp_card(self):
-        print('click')
+        if not self.valid_fields():
+            return self.show_message(QMessageBox.Icon.Critical, 'Ошибка', 'Проверьте правильность ввода данных')
+
+        f_name_text = self.first_name_field.text().strip()
+        s_name_text = self.second_name_field.text().strip()
+        card_number_text = self.card_number_field.text().strip()
+        p_number_text = self.phone_number_field.text().strip()
+
+        datetime_now = datetime.datetime.now()
+
+        date_time_in = datetime_now.strftime('%d/%m/%Y %H:%M:%S')
+        date_time_out = (datetime_now + timedelta(hours=self.time_)).strftime('%d/%m/%Y %H:%M:%S')
+
+        report_message = (f'Имя: {f_name_text}\n'
+                          f'Фамилия: {s_name_text}\n'
+                          f'Номер пропуска: {card_number_text}\n'
+                          f'Номер телефона: {p_number_text}\n'
+                          f'Время входа: {date_time_in}\n'
+                          f'Время выхода: {date_time_out}\n')
+
+        db.add_temp_card(int(card_number_text), f_name_text, s_name_text, p_number_text, 1, [date_time_in, date_time_out])
+
+        self.show_message(QMessageBox.Icon.Information, 'Временный пропуск добавлен', report_message)
+
         self.close()
+
+    def valid_fields(self) -> bool:
+        f_name_text = self.first_name_field.text().strip()
+        s_name_text = self.second_name_field.text().strip()
+        card_number_text = self.card_number_field.text().strip()
+        phone_number_text = self.phone_number_field.text().strip().replace('+', '')
+
+        check_f_name = (not self.is_empty(f_name_text) and self.count_words(f_name_text) == 1)
+        check_s_name = (not self.is_empty(s_name_text) and self.count_words(s_name_text) == 1)
+        check_card_number = (not self.is_empty(card_number_text) and self.count_words(card_number_text) == 1 and card_number_text.isdigit())
+        check_phone_number = False if re.match(r'((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}',
+                                               phone_number_text) is None or self.count_words(
+            phone_number_text) > 1 or len(phone_number_text) != 11 or not phone_number_text.isdigit() else True
+
+        return check_f_name and check_s_name and check_card_number and check_phone_number
 
     def clear_fields(self):
         self.first_name_field.clear()
         self.second_name_field.clear()
         self.card_number_field.clear()
+        self.phone_number_field.clear()
 
 
 class MainWindow(QMainWindow, MessageHandler, FieldValidator):
@@ -198,16 +243,33 @@ class MainWindow(QMainWindow, MessageHandler, FieldValidator):
         date_time_out = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
         card_number = int(self.card_number_field.text())
 
+        temp_card_data = db.get_temp_card_data(card_number)
+        if temp_card_data:
+            if not temp_card_data[4]:
+                return self.show_message(QMessageBox.Icon.Warning, 'Неактивный пропуск', 'Пропуск данного пользователя неактивен. Обратитесь к старшему охраннику')
+            else:
+                report_message = (f'Номер временного пропуска: {temp_card_data[0]}\n'
+                                  f'Имя: {temp_card_data[1]}\n'
+                                  f'Фамилия: {temp_card_data[2]}\n'
+                                  f'Номер телефона: {temp_card_data[3]}\n'
+                                  f'Время входа: {temp_card_data[5]}\n'
+                                  f'Время выхода: {temp_card_data[6]}\n')
+
+                db.update_temp_card_active(card_number, 0)
+
+                self.clear_fields()
+
+                return self.show_message(QMessageBox.Icon.Information, 'Временный пропуск', report_message)
+
         if not db.check_employee_by_card_number(card_number):
             return self.show_message(QMessageBox.Icon.Critical, 'Ошибка', 'Данного пользователя не существует')
 
-        employee_visiting = db.get_employee_visiting(card_number)[-1] if db.check_employee_in_visitors(
-            card_number) else [False]  # связано с проверкой ниже, чтобы не переписывать код, сделал костыль)
+        employee_visiting = db.get_employee_visiting(card_number)[-1] if db.check_employee_in_visitors(card_number) else [False]  # связано с проверкой ниже, чтобы не переписывать код, сделал костыль)
 
         if employee_visiting[-1] is not None:
             return self.show_message(QMessageBox.Icon.Critical, 'Ошибка', 'Данный сотрудник не заходил на территорию')
 
-        db.add_employee_visiting_time_from(card_number, date_time_out)
+        db.update_employee_visiting_time_from(card_number, date_time_out)
 
         employee_data = db.get_employee_by_card_number(card_number)
         employee_visiting = db.get_employee_visiting(card_number)[-1]

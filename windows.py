@@ -300,6 +300,10 @@ class MainWindow(QMainWindow, MessageHandler, FieldValidator):
         self.clear_fields()
 
     def out_employee(self):
+
+        if not self.valid_fields():
+            return self.show_message(QMessageBox.Icon.Critical, 'Ошибка', 'Проверьте правильность ввода данных')
+
         date_time_out = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
         card_number = int(self.card_number_field.text())
 

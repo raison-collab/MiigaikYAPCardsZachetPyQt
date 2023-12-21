@@ -26,7 +26,14 @@ class TempCardsChecker(DatabaseController):
                 if datetime.datetime.now() >= parse(card[-1]):
                     self.update_temp_card_active(card[0], 0)
 
-                    report_message = 'Истекло'
+                    report_message = (f'Временный пропуск истек. Обратитесь к старшему охраннику!\n'
+                                      f'Инфорация о сотруднике:\n'
+                                      f'Номер пропуска: {card[0]}\n'
+                                      f'Имя: {card[1]}\n'
+                                      f'Фамилия: {card[2]}\n'
+                                      f'Номер телефона: {card[3]}\n'
+                                      f'Время прибытия: {card[5]}\n'
+                                      f'Пропуск годен до: {card[6]}')
 
                     self.window.show_message(QMessageBox.Icon.Critical, 'Истек временный пропуск', report_message)
 
